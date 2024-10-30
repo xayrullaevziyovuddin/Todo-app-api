@@ -1,6 +1,6 @@
 default_language_version:
-    python: python3.12
-exclude: '(\.eggs|\.git|\.hg|\.mypy_cache|\.idea|.idea|\.pytest_cache|\.tox|\.venv|venv|.env|env|\.vscode|static|media/|.*/templates|.*/migrations)'
+  python: python3.12
+exclude: '(\.eggs|\.git|\.hg|\.mypy_cache|\.idea|\.pytest_cache|\.tox|\.venv|venv|\.env|env|\.vscode|static|media/|.*/templates|.*/migrations)'
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.4
@@ -11,13 +11,13 @@ repos:
     rev: 24.4.2
     hooks:
       - id: black
-        # entry: bash -c 'balck "$@"; git add -u' --
+        args: [--line-length=88]  # Настройка длины строки
         description: "Black: The uncompromising Python code formatter"
   - repo: local
     hooks:
       - id: migrations-check
         language: system
         name: Check for uncreated migrations.
-        entry: sh -c "./manage.py makemigrations --check --dry-run"
+        entry: bash -c "./manage.py makemigrations --check --dry-run"
         files: "models\\.py$"
         stages: [ commit ]

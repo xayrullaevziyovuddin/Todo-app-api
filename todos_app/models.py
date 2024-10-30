@@ -1,20 +1,18 @@
 from django.db import models
+from django.utils import timezone
+
 
 class Todo(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
     ]
-    PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-    ]
 
     title = models.CharField(max_length=255, unique=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    due_date = models.DateField(null=True, blank=True)  # Поле для дедлайна
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')  # Поле для приоритета
+    due_date = models.DateField(null=True, blank=True)
+    created_date = models.DateTimeField(default=timezone.now)  # Поле для даты создания
+    is_special_day = models.BooleanField(default=False)  # Булевое поле для особого дня
 
     def __str__(self):
         return self.title

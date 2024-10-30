@@ -11,4 +11,4 @@ def validate_title(value):
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ['id', 'title', 'status', 'due_date', 'priority']
+        fields = ['id', 'title', 'status', 'due_date', 'created_date', 'is_special_day']
