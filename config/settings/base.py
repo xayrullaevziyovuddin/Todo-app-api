@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import environ
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -35,12 +36,34 @@ LOCAL_APPS = [
 
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'                                     # Замените на ваш SMTP-сервер
+EMAIL_PORT = 587                                                    # Порт для TLS
+EMAIL_USE_TLS = True                                                # Используйте TLS для безопасности
+EMAIL_HOST_USER = 'xayrullaevziyovuddin@gmail.com'                  # Укажите ваш email
+EMAIL_HOST_PASSWORD = 'dwjrgsdkoiduzslo'                            # Укажите пароль для email
+
+
 THIRD_PARTY_APPS = [
     "rest_framework",             # DRF для создания API
     "rest_framework_simplejwt",   # JWT для авторизации
     "django_filters",             # Django Filter для фильтрации
     "drf_yasg",                   # Swagger для документации
     "debug_toolbar",              # Debug Toolbar для отладки
+    "django_rest_passwordreset",  # Приложение для восстановления пароля
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_PARTY_APPS
