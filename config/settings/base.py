@@ -28,6 +28,7 @@ BASE_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
 ]
 
 LOCAL_APPS = [
@@ -49,12 +50,14 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.example.com'                                     # Замените на ваш SMTP-сервер
-EMAIL_PORT = 587                                                    # Порт для TLS
-EMAIL_USE_TLS = True                                                # Используйте TLS для безопасности
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True                                      # Используйте TLS для безопасности
 EMAIL_HOST_USER = 'xayrullaevziyovuddin@gmail.com'                  # Укажите ваш email
-EMAIL_HOST_PASSWORD = 'dwjrgsdkoiduzslo'                            # Укажите пароль для email
+EMAIL_HOST_PASSWORD = 'ttmpyamusehzajtr'                            # Укажите пароль для email
 
 
 THIRD_PARTY_APPS = [
