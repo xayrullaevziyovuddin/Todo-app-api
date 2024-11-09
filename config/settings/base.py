@@ -65,6 +65,7 @@ THIRD_PARTY_APPS = [
     "drf_yasg",  # Swagger для документации
     "debug_toolbar",  # Debug Toolbar для отладки
     "django_rest_passwordreset",  # Приложение для восстановления пароля
+    'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'auth_app.CustomUser'
