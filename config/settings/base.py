@@ -50,24 +50,26 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True                                      # Используйте TLS для безопасности
-EMAIL_HOST_USER = 'xayrullaevziyovuddin@gmail.com'                  # Укажите ваш email
-EMAIL_HOST_PASSWORD = 'ttmpyamusehzajtr'                            # Укажите пароль для email
-
+EMAIL_USE_TLS = True  # Используйте TLS для безопасности
+EMAIL_HOST_USER = 'xayrullaevziyovuddin@gmail.com'  # Укажите ваш email
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # Получаем пароль из переменной окружения
 
 THIRD_PARTY_APPS = [
-    "rest_framework",             # DRF для создания API
-    "rest_framework_simplejwt",   # JWT для авторизации
-    "django_filters",             # Django Filter для фильтрации
-    "drf_yasg",                   # Swagger для документации
-    "debug_toolbar",              # Debug Toolbar для отладки
+    "rest_framework",  # DRF для создания API
+    "rest_framework_simplejwt",  # JWT для авторизации
+    "rest_framework_simplejwt.token_blacklist",  # token_blacklist для выхода (logout) с помощью черного списка
+    "django_filters",  # Django Filter для фильтрации
+    "drf_yasg",  # Swagger для документации
+    "debug_toolbar",  # Debug Toolbar для отладки
     "django_rest_passwordreset",  # Приложение для восстановления пароля
+    'corsheaders',
 ]
+
+AUTH_USER_MODEL = 'auth_app.CustomUser'
+
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
