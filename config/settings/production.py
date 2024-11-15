@@ -1,11 +1,11 @@
 from .base import *  # noqa
 
 ALLOWED_HOSTS = [
-    "api.example.com",
-    "admin.example.com",
+    "yourusername.pythonanywhere.com",  # Ваше имя пользователя на PythonAnywhere
+    "api.example.com",  # Дополнительные домены, если есть
+    "admin.example.com",  # Дополнительные домены, если есть
     "localhost",
     "127.0.0.1",
-    "209.38.236.111",
 ]
 
 CSRF_TRUSTED_ORIGINS = ["https://api.example.com", "https://admin.example.com"]

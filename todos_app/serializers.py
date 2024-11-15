@@ -12,3 +12,4 @@ class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ['id', 'title', 'status', 'due_date', 'created_date', 'is_special_day']
+        read_only_fields = ['user']  # Делаем поле "user" только для чтения

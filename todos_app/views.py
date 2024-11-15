@@ -12,3 +12,11 @@ class TodoViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TodoFilter
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Возвращаем задачи только текущего пользователя
+        return Todo.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        # Устанавливаем текущего пользователя как владельца задачи
+        serializer.save(user=self.request.user)
