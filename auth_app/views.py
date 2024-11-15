@@ -3,18 +3,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import CustomUser
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
-
+from .serializers import PasswordResetRequestSerializer, PasswordResetConfirmSerializer, \
+    RegisterWithOTPSerializer, SendOTPSerializer
+from django.utils import timezone
+from django.conf import settings
+from django.core.mail import send_mail
+import random
 User = get_user_model()
 
 
-# Для создания пользователя
-class UserCreateView(generics.CreateAPIView):
-    serializer_class = UserSerializer
-
-
 # Запрос на сброс пароля (отправка OTP на email)
-# Ваша логика в PasswordResetRequestView остается прежней
+
 class PasswordResetRequestView(APIView):
     serializer_class = PasswordResetRequestSerializer
 
@@ -46,3 +45,44 @@ class PasswordResetConfirmView(APIView):
         serializer.save()
 
         return Response({"message": "Пароль успешно изменен."}, status=status.HTTP_200_OK)
+
+
+# Отправка OTP на email
+class SendOTPView(APIView):
+    serializer_class = SendOTPSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        # Генерация OTP
+        otp_code = str(random.randint(100000, 999999))
+        otp_expires = timezone.now() + timezone.timedelta(minutes=5)
+
+        # Отправка OTP на email
+        send_mail(
+            subject='Ваш OTP код для подтверждения email',
+            message=f'Ваш OTP код: {otp_code}. Он действителен в течение 5 минут.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email]
+        )
+
+        # Сохранение OTP и времени его действия в сессии
+        request.session['otp_code'] = otp_code
+        request.session['otp_expires'] = otp_expires.isoformat()
+        request.session['email_for_otp'] = email
+
+        return Response({"message": "OTP был отправлен на ваш email."}, status=status.HTTP_200_OK)
+
+
+# Подтверждение OTP и регистрация
+class RegisterWithOTPView(generics.CreateAPIView):
+    serializer_class = RegisterWithOTPSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"message": "Регистрация успешно завершена."}, status=status.HTTP_201_CREATED)
