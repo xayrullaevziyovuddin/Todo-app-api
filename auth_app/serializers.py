@@ -9,29 +9,37 @@ User = get_user_model()
 
 # Подтверждение OTP и регистрация пользователя
 class RegisterWithOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
 
     def validate(self, data):
+        email = data.get('email')
         otp = data.get('otp')
 
-        # Проверяем OTP и срок его действия
+        # Проверяем, соответствует ли email сохранённому
+        if self.context['request'].session.get('email_for_otp') != email:
+            raise serializers.ValidationError("Email не соответствует ранее отправленному.")
+
+        # Проверяем OTP
         if self.context['request'].session.get('otp_code') != otp:
             raise serializers.ValidationError("Неправильный OTP код.")
 
+        # Проверка срока действия OTP
         otp_expires = self.context['request'].session.get('otp_expires')
         if not otp_expires or timezone.now() > timezone.datetime.fromisoformat(otp_expires):
             raise serializers.ValidationError("Срок действия OTP истек.")
+
         return data
 
     def create(self, validated_data):
         # Получение данных из сессии
         request = self.context['request']
-        email = request.session.get('email_for_otp')
+        email = validated_data['email']
         username = request.session.get('username_for_otp')
         password = request.session.get('password_for_otp')
 
-        if not all([email, username, password]):
-            raise serializers.ValidationError("Не хватает данных для регистрации.")
+        if not all([username, password]):
+            raise serializers.ValidationError("Не хватает данных для завершения регистрации.")
 
         # Создание пользователя
         user = User.objects.create_user(
