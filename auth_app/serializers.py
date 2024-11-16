@@ -16,46 +16,25 @@ class RegisterWithOTPSerializer(serializers.Serializer):
         email = data.get('email')
         otp = data.get('otp')
 
-        # Проверяем, соответствует ли email сохранённому
-        if self.context['request'].session.get('email_for_otp') != email:
-            raise serializers.ValidationError("Email не соответствует ранее отправленному.")
+        # Получение данных из сессии
+        request = self.context.get('request')
+        if not request:
+            raise serializers.ValidationError("Контекст запроса отсутствует.")
 
-        # Проверяем OTP
-        if self.context['request'].session.get('otp_code') != otp:
+        session_email = request.session.get('email_for_otp')
+        session_otp = request.session.get('otp_code')
+        session_expiry = request.session.get('otp_expires')
+
+        if not session_email or session_email != email:
+            raise serializers.ValidationError("Email не совпадает с тем, на который был отправлен OTP.")
+
+        if not session_otp or session_otp != otp:
             raise serializers.ValidationError("Неправильный OTP код.")
 
-        # Проверка срока действия OTP
-        otp_expires = self.context['request'].session.get('otp_expires')
-        if not otp_expires or timezone.now() > timezone.datetime.fromisoformat(otp_expires):
+        if not session_expiry or timezone.now() > timezone.datetime.fromisoformat(session_expiry):
             raise serializers.ValidationError("Срок действия OTP истек.")
 
         return data
-
-    def create(self, validated_data):
-        # Получение данных из сессии
-        request = self.context['request']
-        email = validated_data['email']
-        username = request.session.get('username_for_otp')
-        password = request.session.get('password_for_otp')
-
-        if not all([username, password]):
-            raise serializers.ValidationError("Не хватает данных для завершения регистрации.")
-
-        # Создание пользователя
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-
-        # Очистка сессии
-        request.session.pop('otp_code', None)
-        request.session.pop('otp_expires', None)
-        request.session.pop('email_for_otp', None)
-        request.session.pop('username_for_otp', None)
-        request.session.pop('password_for_otp', None)
-
-        return user
 
 
 # Отправка OTP на email
