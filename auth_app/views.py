@@ -46,7 +46,6 @@ class SendOTPView(APIView):
         return Response({"message": "OTP был отправлен на ваш email."}, status=status.HTTP_200_OK)
 
 
-
 # Подтверждение OTP и регистрация
 class RegisterWithOTPView(generics.CreateAPIView):
     serializer_class = RegisterWithOTPSerializer

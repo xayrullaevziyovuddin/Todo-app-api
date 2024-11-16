@@ -8,7 +8,7 @@ from .views import PasswordResetRequestView, PasswordResetConfirmView, SendOTPVi
 urlpatterns = [
     path('signup/', SendOTPView.as_view(), name='signup'),  # Отправка OTP
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('register/confirm/', RegisterWithOTPView.as_view(), name='register_with_otp'), # Завершение регистрации по OTP
+    path('register/confirm/', RegisterWithOTPView.as_view(), name='register_with_otp'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 
