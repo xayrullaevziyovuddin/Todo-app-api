@@ -36,7 +36,7 @@ class SendOTPView(APIView):
             recipient_list=[email]
         )
 
-        # Сохранение данных регистрации и OTP в сессии
+        # Сохранение данных временно в сессии
         request.session['otp_code'] = otp_code
         request.session['otp_expires'] = otp_expires.isoformat()
         request.session['email_for_otp'] = email
@@ -47,15 +47,33 @@ class SendOTPView(APIView):
 
 
 # Подтверждение OTP и регистрация
-class RegisterWithOTPView(generics.CreateAPIView):
+class RegisterWithOTPView(APIView):
     serializer_class = RegisterWithOTPSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+        # Получение данных из сессии
+        email = request.session.get('email_for_otp')
+        username = request.session.get('username_for_otp')
+        password = request.session.get('password_for_otp')
+
+        if not all([email, username, password]):
+            return Response({"error": "Данные для создания пользователя отсутствуют."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Создание пользователя
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        # Очистка данных из сессии
+        request.session.flush()
 
         return Response({"message": "Регистрация успешно завершена."}, status=status.HTTP_201_CREATED)
+
 
 
 # Запрос на сброс пароля (отправка OTP на email)
